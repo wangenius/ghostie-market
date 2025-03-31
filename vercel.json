@@ -1,8 +1,16 @@
 {
-	"version": 2,
+	"buildCommand": "tsc",
+	"outputDirectory": "dist",
+	"functions": {
+		"api/**/*.ts": {
+			"memory": 1024,
+			"maxDuration": 10
+		}
+	},
+	"ignoreCommand": "git diff --quiet HEAD^ HEAD ./",
 	"builds": [
 		{
-			"src": "src/index.ts",
+			"src": "src/**/*.ts",
 			"use": "@vercel/node"
 		}
 	],
