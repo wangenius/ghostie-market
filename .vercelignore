@@ -1,1 +1,3 @@
-plugins/**/*.ts 
+plugins/**/*.ts
+plugins/**/*.js
+plugins/**/*.js.map 
