@@ -31,7 +31,13 @@ const generateRandom = ({
 };
 
 // 格式化文本
-const formatText = ({ text, format = "uppercase" }) => {
+const formatText = ({
+  text,
+  format = "uppercase",
+}: {
+  text: string;
+  format: string;
+}) => {
   if (!text) return "";
 
   switch (format) {
