@@ -1,4 +1,4 @@
-import { PluginExport } from "../type";
+import { PluginExport } from "../src/type";
 
 const search = async ({ query = "", maxResults = 10, timeRange = "day" }) => {
   try {
