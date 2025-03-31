@@ -8,9 +8,12 @@ const PORT = process.env.PORT || 3000;
 
 // 获取插件目录的路径
 function getPluginsDir(): string {
-  const distPluginsDir = path.join(process.cwd(), "plugins");
-
-  return distPluginsDir;
+  // 在 Vercel 环境中，插件目录应该在 dist/plugins
+  if (process.env.NODE_ENV === "production") {
+    return path.join(process.cwd(), "dist", "plugins");
+  }
+  // 在开发环境中，使用项目根目录下的 plugins
+  return path.join(process.cwd(), "plugins");
 }
 
 // 插件元数据索引
@@ -119,9 +122,11 @@ app.get("/plugins/:filename", (req: Request, res: Response) => {
     const { filename } = req.params;
     // 确保读取的是 .ts 文件
     const tsFilename = filename.replace(/\.js$/, ".ts");
-    const filePath = path.join(process.cwd(), "plugins", tsFilename);
+    const pluginsDir = getPluginsDir();
+    const filePath = path.join(pluginsDir, tsFilename);
 
     if (!fs.existsSync(filePath)) {
+      console.error(`插件文件不存在: ${filePath}`);
       return res.status(404).json({ error: "插件文件不存在" });
     }
 
