@@ -105,7 +105,9 @@ app.get("/plugins/list", (req: Request, res: Response) => {
 app.get("/plugins/:filename", (req: Request, res: Response) => {
   try {
     const { filename } = req.params;
-    const filePath = path.join(process.cwd(), "plugins", filename);
+    // 确保读取的是 .ts 文件
+    const tsFilename = filename.replace(/\.js$/, ".ts");
+    const filePath = path.join(process.cwd(), "plugins", tsFilename);
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: "插件文件不存在" });
