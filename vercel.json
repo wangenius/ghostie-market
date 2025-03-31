@@ -1,5 +1,5 @@
 {
-	"ignoreCommand": "git diff --quiet HEAD^ HEAD ./",
+	"version": 2,
 	"builds": [
 		{
 			"src": "api/**/*.ts",
@@ -8,8 +8,8 @@
 	],
 	"routes": [
 		{
-			"src": "/(.*)",
-			"dest": "api/index.ts"
+			"src": "/api/(.*)",
+			"dest": "/api/$1"
 		}
 	]
 }

@@ -1,5 +1,3 @@
-import { PluginExport } from "../src/type.ts";
-
 const search = async ({ query = "", maxResults = 10, timeRange = "day" }) => {
   try {
     const TAVILY_API_KEY = Deno.env.get("TAVILY_API_KEY");
@@ -57,4 +55,4 @@ export default {
       handler: search,
     },
   },
-} as PluginExport;
+};
