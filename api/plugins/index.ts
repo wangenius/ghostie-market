@@ -4,7 +4,16 @@ import * as path from "path";
 
 // 获取插件目录的路径
 function getPluginsDir(): string {
-  return path.join(process.cwd(), "plugins");
+  // 检查是否在 Vercel 环境中
+  const isVercel = process.env.VERCEL === "1";
+
+  if (isVercel) {
+    // 生产环境：使用 Vercel 的输出目录
+    return path.join(process.cwd(), ".vercel", "output", "static");
+  } else {
+    // 开发环境：直接使用项目根目录下的 plugins 文件夹
+    return path.join(process.cwd(), "plugins");
+  }
 }
 
 // 验证文件名是否安全
