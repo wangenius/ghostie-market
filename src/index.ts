@@ -8,17 +8,9 @@ const PORT = process.env.PORT || 3000;
 
 // 获取插件目录的路径
 function getPluginsDir(): string {
-  // 在生产环境中，插件位于 dist/plugins 目录
-  const distPluginsDir = path.join(process.cwd(), "dist", "plugins");
-  // 在开发环境中，插件位于 plugins 目录
-  const devPluginsDir = path.join(process.cwd(), "plugins");
+  const distPluginsDir = path.join(process.cwd(), "plugins");
 
-  // 如果 dist/plugins 存在，使用它
-  if (fs.existsSync(distPluginsDir)) {
-    return distPluginsDir;
-  }
-  // 否则使用开发环境的目录
-  return devPluginsDir;
+  return distPluginsDir;
 }
 
 // 插件元数据索引
@@ -45,7 +37,8 @@ function parsePluginMeta(filename: string): PluginMeta {
   let description = "";
   let version = "";
   let author = "";
-  let name = path.basename(filename, path.extname(filename));
+  // 使用 .ts 扩展名作为默认值
+  let name = path.basename(filename, ".ts");
 
   try {
     // 从导出对象中解析元数据
@@ -97,8 +90,10 @@ function initPluginsIndex() {
     }
 
     const files = fs.readdirSync(pluginsDir);
-    console.log(`找到 ${files.length} 个插件文件`);
-    return files.map(parsePluginMeta);
+    // 只处理 .ts 文件
+    const tsFiles = files.filter((file) => file.endsWith(".ts"));
+    console.log(`找到 ${tsFiles.length} 个插件文件`);
+    return tsFiles.map(parsePluginMeta);
   } catch (error) {
     console.error("初始化插件索引时出错:", error);
     return [];
