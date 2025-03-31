@@ -1,6 +1,75 @@
-# Plugins Server
+# 插件服务器
 
-这是一个简单的 Express 服务器，用于提供`plugins`文件夹中的插件内容。
+这是一个用于提供插件服务的 Express 服务器，可以部署到 Vercel 上。
+
+## 本地开发
+
+```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+```
+
+## 部署到 Vercel
+
+### 方法一：使用 Vercel CLI
+
+1. 安装 Vercel CLI
+
+```bash
+npm install -g vercel
+```
+
+2. 登录 Vercel
+
+```bash
+vercel login
+```
+
+3. 部署项目
+
+```bash
+vercel
+```
+
+### 方法二：使用 Vercel 仪表板
+
+1. 在 GitHub、GitLab 或 Bitbucket 上创建一个仓库并推送代码
+2. 在[Vercel 仪表板](https://vercel.com)中导入项目
+3. 选择仓库并点击"部署"
+
+## 项目结构
+
+- `src/index.ts` - 主服务器文件
+- `plugins/` - 插件目录
+- `vercel.json` - Vercel 配置文件
+
+## 如何使用
+
+部署后，可以通过以下端点访问：
+
+- 获取插件列表: `https://your-vercel-domain.vercel.app/plugins/list`
+- 获取特定插件: `https://your-vercel-domain.vercel.app/plugins/插件文件名`
+
+## 添加新插件
+
+将 JavaScript 文件添加到`plugins`目录。每个插件文件应该包含以下元数据：
+
+```javascript
+module.exports = {
+  name: "插件名称",
+  description: "插件描述",
+  version: "1.0.0",
+  author: "作者名称",
+
+  // 插件功能
+  execute() {
+    // 插件代码
+  },
+};
+```
 
 ## 功能
 

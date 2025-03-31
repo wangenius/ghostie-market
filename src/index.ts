@@ -22,7 +22,7 @@ let pluginsIndex: PluginMeta[] = [];
 
 // 解析插件文件并提取元数据
 function parsePluginMeta(filename: string): PluginMeta {
-  const filePath = path.join(__dirname, "plugins", filename);
+  const filePath = path.join(process.cwd(), "plugins", filename);
   const stats = fs.statSync(filePath);
   const content = fs.readFileSync(filePath, "utf-8");
 
@@ -71,14 +71,20 @@ function parsePluginMeta(filename: string): PluginMeta {
 // 初始化插件索引
 function initPluginsIndex() {
   try {
-    const pluginsDir = path.join(__dirname, "plugins");
+    const pluginsDir = path.join(process.cwd(), "plugins");
+
+    // 检查目录是否存在
+    if (!fs.existsSync(pluginsDir)) {
+      fs.mkdirSync(pluginsDir, { recursive: true });
+      console.log(`创建插件目录: ${pluginsDir}`);
+      return [];
+    }
+
     const files = fs.readdirSync(pluginsDir);
-
-    pluginsIndex = files.map(parsePluginMeta);
-
-    console.log(`已索引 ${pluginsIndex.length} 个插件`);
+    return files.map(parsePluginMeta);
   } catch (error) {
     console.error("初始化插件索引时出错:", error);
+    return [];
   }
 }
 
@@ -90,6 +96,8 @@ app.use(express.json());
 
 // 获取所有插件列表
 app.get("/plugins/list", (req: Request, res: Response) => {
+  // 每次请求重新加载插件列表，以确保获取最新数据
+  pluginsIndex = initPluginsIndex();
   res.json({ plugins: pluginsIndex });
 });
 
@@ -97,7 +105,7 @@ app.get("/plugins/list", (req: Request, res: Response) => {
 app.get("/plugins/:filename", (req: Request, res: Response) => {
   try {
     const { filename } = req.params;
-    const filePath = path.join(__dirname, "plugins", filename);
+    const filePath = path.join(process.cwd(), "plugins", filename);
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: "插件文件不存在" });
@@ -111,11 +119,15 @@ app.get("/plugins/:filename", (req: Request, res: Response) => {
   }
 });
 
-// 启动服务器
-app.listen(PORT, () => {
-  // 初始化插件索引
-  initPluginsIndex();
+// 开发环境下直接启动服务器
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    // 初始化插件索引
+    pluginsIndex = initPluginsIndex();
+    console.log(`服务器运行在 http://localhost:${PORT}`);
+    console.log(`插件列表: http://localhost:${PORT}/plugins/list`);
+  });
+}
 
-  console.log(`服务器运行在 http://localhost:${PORT}`);
-  console.log(`插件列表: http://localhost:${PORT}/plugins/list`);
-});
+// 为Vercel导出
+export default app;
