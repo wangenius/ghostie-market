@@ -8,8 +8,12 @@
 	],
 	"routes": [
 		{
+			"src": "/plugins/list",
+			"dest": "src/index.ts"
+		},
+		{
 			"src": "/plugins/(.*)",
-			"dest": "/plugins/$1"
+			"dest": "src/index.ts"
 		},
 		{
 			"src": "/(.*)",
