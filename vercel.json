@@ -1,6 +1,4 @@
 {
-	"buildCommand": "tsc",
-	"outputDirectory": "dist",
 	"functions": {
 		"api/**/*.ts": {
 			"memory": 1024,
