@@ -6,6 +6,21 @@ import * as path from "path";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 获取插件目录的路径
+function getPluginsDir(): string {
+  // 在生产环境中，插件位于 dist/plugins 目录
+  const distPluginsDir = path.join(process.cwd(), "dist", "plugins");
+  // 在开发环境中，插件位于 plugins 目录
+  const devPluginsDir = path.join(process.cwd(), "plugins");
+
+  // 如果 dist/plugins 存在，使用它
+  if (fs.existsSync(distPluginsDir)) {
+    return distPluginsDir;
+  }
+  // 否则使用开发环境的目录
+  return devPluginsDir;
+}
+
 // 插件元数据索引
 interface PluginMeta {
   name: string;
@@ -22,7 +37,8 @@ let pluginsIndex: PluginMeta[] = [];
 
 // 解析插件文件并提取元数据
 function parsePluginMeta(filename: string): PluginMeta {
-  const filePath = path.join(process.cwd(), "plugins", filename);
+  const pluginsDir = getPluginsDir();
+  const filePath = path.join(pluginsDir, filename);
   const stats = fs.statSync(filePath);
   const content = fs.readFileSync(filePath, "utf-8");
 
@@ -71,16 +87,17 @@ function parsePluginMeta(filename: string): PluginMeta {
 // 初始化插件索引
 function initPluginsIndex() {
   try {
-    const pluginsDir = path.join(process.cwd(), "plugins");
+    const pluginsDir = getPluginsDir();
+    console.log(`正在从目录加载插件: ${pluginsDir}`);
 
     // 检查目录是否存在
     if (!fs.existsSync(pluginsDir)) {
-      fs.mkdirSync(pluginsDir, { recursive: true });
-      console.log(`创建插件目录: ${pluginsDir}`);
+      console.log(`插件目录不存在: ${pluginsDir}`);
       return [];
     }
 
     const files = fs.readdirSync(pluginsDir);
+    console.log(`找到 ${files.length} 个插件文件`);
     return files.map(parsePluginMeta);
   } catch (error) {
     console.error("初始化插件索引时出错:", error);
